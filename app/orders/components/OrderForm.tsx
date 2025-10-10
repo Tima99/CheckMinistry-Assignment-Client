@@ -1,41 +1,45 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
-import { FaSave, FaTimes } from "react-icons/fa";
+import { FaSave, FaSyncAlt, FaTimes } from "react-icons/fa";
 
 export default function OrderForm({
   mode = "create",
   id,
+  initialData,
 }: {
   mode?: "create" | "edit";
   id?: string;
+  initialData?: string;
 }) {
-  const [orderDescription, setOrderDescription] = useState("");
+  const [orderDescription, setOrderDescription] = useState(initialData || "");
+  const [loading, setLoading] = useState(false); // loading state for submit
+
   const router = useRouter();
 
-  // Fetch existing order if in edit mode
-  useEffect(() => {
-    if (mode === "edit" && id) {
-      api.get(`/orders/${id}`).then((res) => {
-        setOrderDescription(res.data.orderDescription);
-      });
-    }
-  }, [mode, id]);
-
   // Handle form submission for create/update
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!orderDescription.trim()) return alert("Description required");
 
-    if (mode === "create") {
-      await api.post("/orders", { orderDescription });
-    } else {
-      await api.put(`/orders/${id}`, { orderDescription });
-    }
+    try {
+      setLoading(true);
 
-    router.push("/orders");
+      if (mode === "create") {
+        await api.post("/orders", { orderDescription });
+      } else {
+        await api.put(`/orders/${id}`, { orderDescription });
+      }
+
+      router.push("/orders");
+    } catch (err) {
+      console.error("Error saving order:", err);
+      alert("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,9 +65,23 @@ export default function OrderForm({
           </button>
           <button
             type="submit"
-            className="bg-violet-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-violet-700"
+            disabled={loading} // disable button while loading
+            className={`flex items-center gap-2 px-4 py-2 rounded ${
+              loading
+                ? "bg-violet-400 cursor-not-allowed"
+                : "bg-violet-600 hover:bg-violet-700"
+            } text-white`}
           >
-            <FaSave /> {mode === "create" ? "Book Order" : "Update Order"}
+            {loading ? (
+              <>
+                <FaSyncAlt className="animate-spin" />{" "}
+                {mode === "create" ? "Booking..." : "Updating..."}
+              </>
+            ) : (
+              <>
+                <FaSave /> {mode === "create" ? "Book Order" : "Update Order"}
+              </>
+            )}
           </button>
         </div>
       </form>
