@@ -2,7 +2,7 @@
 import { useState, FormEvent } from "react";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
-import { FaSave, FaSyncAlt, FaTimes } from "react-icons/fa";
+import { FaArrowLeft, FaSave, FaSyncAlt, FaTimes } from "react-icons/fa";
 import ProductCard from "@/components/ProductCard";
 import { Order } from "@/types/order";
 import { Product } from "@/types/product";
@@ -74,9 +74,19 @@ export default function OrderForm({
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">
-        {mode === "create" ? "Book New Order" : "Edit Order"}
-      </h1>
+      <div className="mb-2 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="text-gray-600 hover:text-gray-800"
+        >
+          <FaArrowLeft />
+        </button>
+
+        <h1 className="text-2xl font-semibold">
+          {mode === "create" ? "Book New Order" : "Edit Order"}
+        </h1>
+      </div>
 
       <form onSubmit={handleSubmit}>
         <textarea
