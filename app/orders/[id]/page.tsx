@@ -11,14 +11,31 @@ export default async function EditOrderPage({
   const { id } = await params;
 
   // Fetch existing order server-side
-  let orderData = null;
+  let orderData: Order | null = null;
   try {
     orderData = (await api.get(`/orders/${id}`)).data as Order;
+    console.log(orderData);
   } catch (err) {
     console.error("Error fetching order:", err);
   }
 
+  // Fetch products with Next fetch as for caching
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_V1_BASE_URL}/products`,
+    {
+      cache: "force-cache", // ✅ caches the response indefinitely (or until revalidation)
+      next: { revalidate: 360 },
+    }
+  );
+
+  const products = await res.json();
+
   return (
-    <OrderForm mode="edit" initialData={orderData?.orderDescription} id={id} />
+    <OrderForm
+      mode="edit"
+      initialData={orderData}
+      id={id}
+      products={products}
+    />
   );
 }

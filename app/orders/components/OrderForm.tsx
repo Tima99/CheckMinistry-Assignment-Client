@@ -4,23 +4,32 @@ import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { FaSave, FaSyncAlt, FaTimes, FaCheck } from "react-icons/fa";
 import ProductCard from "@/components/ProductCard";
+import { Order } from "@/types/order";
+
+interface OrderFormProps {
+  mode?: "create" | "edit";
+  id?: string;
+  initialData?: Order | null;
+  products?: Product[];
+}
 
 export default function OrderForm({
   mode = "create",
   id,
   initialData,
   products = [],
-}: {
-  mode?: "create" | "edit";
-  id?: string;
-  initialData?: string;
-  products?: Product[];
-}) {
-  const [orderDescription, setOrderDescription] = useState(initialData || "");
-  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+}: OrderFormProps) {
+  const [orderDescription, setOrderDescription] = useState(
+    initialData?.orderDescription || ""
+  );
+  const [selectedProductIds, setSelectedProductIds] = useState<number[]>(
+    initialData?.products?.map((p) => p.productId) || []
+  );
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // Select/unselect Product handler
   const handleSelectProduct = (productId: number) => {
     setSelectedProductIds((prev) =>
       prev.includes(productId)
@@ -29,14 +38,17 @@ export default function OrderForm({
     );
   };
 
+  // Form Submission handler
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    // Validate Inputs
     if (!orderDescription.trim()) return alert("Description required");
     if (selectedProductIds.length === 0)
       return alert("Please select at least one product");
 
     try {
+      // Set Loading to true
       setLoading(true);
 
       const payload = {
