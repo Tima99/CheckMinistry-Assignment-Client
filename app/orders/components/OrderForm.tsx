@@ -6,6 +6,8 @@ import { FaArrowLeft, FaSave, FaSyncAlt, FaTimes } from "react-icons/fa";
 import ProductCard from "@/components/ProductCard";
 import { Order } from "@/types/order";
 import { Product } from "@/types/product";
+import { AxiosError } from "axios";
+import { Textarea } from "@/components/Textarea";
 
 interface OrderFormProps {
   mode?: "create" | "edit";
@@ -30,6 +32,8 @@ export default function OrderForm({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const descriptionMaxLength = 100;
+
   // Select/unselect Product handler
   const handleSelectProduct = (productId: number) => {
     setSelectedProductIds((prev) =>
@@ -44,7 +48,7 @@ export default function OrderForm({
     e.preventDefault();
 
     // Validate Inputs
-    if (!orderDescription.trim()) return alert("Description required");
+    if (!orderDescription) return alert("Description required");
     if (selectedProductIds.length === 0)
       return alert("Please select at least one product");
 
@@ -66,7 +70,10 @@ export default function OrderForm({
       router.push("/orders");
     } catch (err) {
       console.error("Error saving order:", err);
-      alert("Something went wrong");
+      alert(
+        (err as AxiosError<{ message: string }>)?.response?.data?.message ||
+          "Something went wrong"
+      );
     } finally {
       setLoading(false);
     }
@@ -89,14 +96,14 @@ export default function OrderForm({
       </div>
 
       <form onSubmit={handleSubmit}>
-        <textarea
-          rows={3}
-          className="border w-full rounded p-2 mb-4 focus:ring-2 focus:ring-violet-400 outline-none"
-          placeholder="Enter order description..."
+        {/* Description */}
+        <Textarea
           value={orderDescription}
-          onChange={(e) => setOrderDescription(e.target.value)}
+          setValue={setOrderDescription}
+          maxLength={descriptionMaxLength}
         />
 
+        {/* Products */}
         <h2 className="mb-2 font-bold">Select Products: </h2>
         <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {products.length > 0 ? (
