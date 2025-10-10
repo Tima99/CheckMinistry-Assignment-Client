@@ -1,3 +1,5 @@
+import { Product } from "./product";
+
 export interface Order {
   id: number;
   orderDescription: string;

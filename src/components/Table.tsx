@@ -1,15 +1,21 @@
 "use client";
+import { TableProps } from "@/types/table";
 import React from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
-const Table: React.FC<TableProps> = ({ columns, data, onEdit, onDelete }) => {
+const Table = <T extends object>({
+  columns,
+  data,
+  onEdit,
+  onDelete,
+}: TableProps<T>): React.ReactElement => {
   return (
-    <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
+    <div className="overflow-x-auto rounded-lg shadow border border-gray-1000">
       <table className="w-full text-sm text-left border-collapse">
         <thead className="bg-gray-100 text-gray-700">
           <tr>
             {columns.map((col) => (
-              <th key={col.key} className="p-3 font-semibold">
+              <th key={String(col.key)} className="p-3 font-semibold">
                 {col.label}
               </th>
             ))}
@@ -27,8 +33,10 @@ const Table: React.FC<TableProps> = ({ columns, data, onEdit, onDelete }) => {
                 className="border-t hover:bg-gray-50 transition-colors duration-150"
               >
                 {columns.map((col) => (
-                  <td key={col.key} className="p-3 text-gray-700">
-                    {col.render ? col.render(row[col.key], row) : row[col.key]}
+                  <td key={String(col.key)} className="p-3 text-gray-700">
+                    {col.render
+                      ? col.render(row[col.key], row)
+                      : String(row[col.key])}
                   </td>
                 ))}
 

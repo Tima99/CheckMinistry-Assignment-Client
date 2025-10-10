@@ -6,9 +6,11 @@ import { Order } from "@/types/order";
 import { FaPlus } from "react-icons/fa";
 import { SearchBar } from "@/components/SearchBar";
 import Table from "@/components/Table";
+import { Column } from "@/types/table";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -62,15 +64,15 @@ export default function OrdersPage() {
       : orders;
   }, [orders, search]);
 
-  const columns = [
-    { key: "id", label: "ID" },
-    { key: "orderDescription", label: "Description" },
+  const columns: Column<Order>[] = [
+    { key: "id", label: "Order ID" },
+    { key: "orderDescription", label: "Order Description" },
     {
       key: "createdAt",
       label: "Created At",
-      render: (value: string) =>
-        new Date(value).toLocaleString("en-IN", {
-          dateStyle: "medium",
+      render: (value) =>
+        new Date(String(value)).toLocaleString("en-IN", {
+          dateStyle: "short",
           timeStyle: "short",
         }),
     },

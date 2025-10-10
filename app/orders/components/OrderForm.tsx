@@ -2,9 +2,10 @@
 import { useState, FormEvent } from "react";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
-import { FaSave, FaSyncAlt, FaTimes, FaCheck } from "react-icons/fa";
+import { FaSave, FaSyncAlt, FaTimes } from "react-icons/fa";
 import ProductCard from "@/components/ProductCard";
 import { Order } from "@/types/order";
+import { Product } from "@/types/product";
 
 interface OrderFormProps {
   mode?: "create" | "edit";

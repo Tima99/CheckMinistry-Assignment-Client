@@ -1,4 +1,5 @@
 "use client";
+import { Product } from "@/types/product";
 import React from "react";
 import { FaCheck } from "react-icons/fa";
 
@@ -20,7 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         ${
           isSelected
             ? "border-transparent bg-gradient-to-r from-violet-400 to-pink-500"
-            : "border-gray-100 bg-white"
+            : "border-gray-200 bg-white"
         }`}
     >
       <div

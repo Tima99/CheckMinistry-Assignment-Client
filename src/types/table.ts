@@ -1,12 +1,13 @@
-interface Column {
-  key: string;
+export interface Column<T> {
+  key: keyof T;
   label: string;
-  render?: (value: any, row: any) => React.ReactNode;
+  render?: (value: T[keyof T], row: T) => React.ReactNode;
 }
 
-interface TableProps {
-  columns: Column[];
-  data: any[];
-  onEdit?: (row: any) => void;
-  onDelete?: (row: any) => void;
+// Table props for generic type T
+export interface TableProps<T> {
+  columns: Column<T>[];
+  data: T[];
+  onEdit?: (row: T) => void;
+  onDelete?: (row: T) => void;
 }
