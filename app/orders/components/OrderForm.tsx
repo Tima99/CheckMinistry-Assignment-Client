@@ -1,36 +1,53 @@
 "use client";
-import { useState, useEffect, FormEvent } from "react";
+import { useState, FormEvent } from "react";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
-import { FaSave, FaSyncAlt, FaTimes } from "react-icons/fa";
+import { FaSave, FaSyncAlt, FaTimes, FaCheck } from "react-icons/fa";
+import ProductCard from "@/components/ProductCard";
 
 export default function OrderForm({
   mode = "create",
   id,
   initialData,
+  products = [],
 }: {
   mode?: "create" | "edit";
   id?: string;
   initialData?: string;
+  products?: Product[];
 }) {
   const [orderDescription, setOrderDescription] = useState(initialData || "");
-  const [loading, setLoading] = useState(false); // loading state for submit
-
+  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Handle form submission for create/update
+  const handleSelectProduct = (productId: number) => {
+    setSelectedProductIds((prev) =>
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId]
+    );
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!orderDescription.trim()) return alert("Description required");
+    if (selectedProductIds.length === 0)
+      return alert("Please select at least one product");
 
     try {
       setLoading(true);
 
+      const payload = {
+        orderDescription,
+        productIds: selectedProductIds,
+      };
+
       if (mode === "create") {
-        await api.post("/orders", { orderDescription });
+        await api.post("/orders", payload);
       } else {
-        await api.put(`/orders/${id}`, { orderDescription });
+        await api.put(`/orders/${id}`, payload);
       }
 
       router.push("/orders");
@@ -43,10 +60,11 @@ export default function OrderForm({
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
+    <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-2xl font-semibold mb-4">
         {mode === "create" ? "Book New Order" : "Edit Order"}
       </h1>
+
       <form onSubmit={handleSubmit}>
         <textarea
           rows={3}
@@ -55,6 +73,23 @@ export default function OrderForm({
           value={orderDescription}
           onChange={(e) => setOrderDescription(e.target.value)}
         />
+
+        <h2 className="mb-2 font-bold">Select Products: </h2>
+        <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {products.length > 0 ? (
+            products.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                isSelected={selectedProductIds.includes(product.id)}
+                onSelect={handleSelectProduct}
+              />
+            ))
+          ) : (
+            <span>No Products Found</span>
+          )}
+        </div>
+
         <div className="flex justify-end gap-3">
           <button
             type="button"
@@ -65,7 +100,7 @@ export default function OrderForm({
           </button>
           <button
             type="submit"
-            disabled={loading} // disable button while loading
+            disabled={loading}
             className={`flex items-center gap-2 px-4 py-2 rounded ${
               loading
                 ? "bg-violet-400 cursor-not-allowed"

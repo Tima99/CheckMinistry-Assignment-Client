@@ -37,11 +37,11 @@ export default function OrdersPage() {
   };
 
   // Delete order handler
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (order: Order) => {
     if (confirm("Are you sure you want to delete this order?")) {
       try {
         setLoading(true);
-        await api.delete(`/orders/${id}`);
+        await api.delete(`/orders/${order.id}`);
         await fetchOrders();
       } catch (err) {
         console.error("Error deleting order:", err);
@@ -74,7 +74,7 @@ export default function OrdersPage() {
           timeStyle: "short",
         }),
     },
-    { key: "count", label: "Products" },
+    { key: "count", label: "Count of Products" },
   ];
 
   return (
