@@ -10,7 +10,7 @@ export default function Home() {
           <Link href={"/orders"}>See Orders</Link>
         </li>
         <li>
-          <Link href={"/orders/new"}>Create New Order</Link>
+          <Link href={"/orders/new"}>Book New Order</Link>
         </li>
       </ul>
     </div>
