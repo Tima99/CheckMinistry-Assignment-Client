@@ -14,7 +14,6 @@ export default async function EditOrderPage({
   let orderData: Order | null = null;
   try {
     orderData = (await api.get(`/orders/${id}`)).data as Order;
-    console.log(orderData);
   } catch (err) {
     console.error("Error fetching order:", err);
   }
