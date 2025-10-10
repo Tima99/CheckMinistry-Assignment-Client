@@ -1,11 +1,10 @@
----
-
 ## **Tech Stack**
 
-* Next.js (React)
-* TypeScript
-* Tailwind CSS (UI Styling)
-* React Icons
+- Next.js (React)
+- TypeScript
+- Tailwind CSS (UI Styling)
+- React Icons
+- Axios
 
 ---
 
